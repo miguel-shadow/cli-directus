@@ -15,7 +15,7 @@ export async function addAction(params: EnvCommandOptions): Promise<void> {
   console.log(OutputTools.formatTitle('Directus CLI - Añadir entorno'))
   console.log()
 
-  const { logger, directusEnv } = params
+  const { logger, directusEnv, directusApi } = params
   const existingEnvs = directusEnv.getAll()
 
   const alias = await askAlias(existingEnvs)
@@ -33,7 +33,18 @@ export async function addAction(params: EnvCommandOptions): Promise<void> {
   })
 
   console.log(OutputTools.divisor())
-  const activeResponse = await inquirer.prompt<{ active: boolean }>([
+
+  // Comprobar credenciales sin bloquear
+  try {
+    directusApi.directusEnvData = newEnv
+    await directusApi.checkConnection()
+  } catch {
+    console.log()
+    logger.log('ERROR', 'Se ha producido un error al comprobar las credenciales del entorno')
+    console.log()
+  }
+
+  const { active } = await inquirer.prompt<{ active: boolean }>([
     {
       type: 'confirm',
       name: 'active',
@@ -42,24 +53,24 @@ export async function addAction(params: EnvCommandOptions): Promise<void> {
     },
   ])
 
-  if (activeResponse.active) {
+  if (active) {
     directusEnv.setCurrent(newEnv.alias)
   }
 
   console.log()
-  logger.log('SUCCESS', `Entorno '${newEnv.alias} (${chalk.underline(newEnv.url)})' añadido${activeResponse.active ? ' y establecido como activo' : ''}.`)
+  logger.log('SUCCESS', `Entorno '${newEnv.alias} (${chalk.underline(newEnv.url)})' añadido${active ? ' y establecido como activo' : ''}.`)
 }
 
 
 async function askAlias(existingEnvs: DirectusEnvData[]): Promise<string> {
-  const answer = await inquirer.prompt<{ input: string }>({
+  const { input } = await inquirer.prompt<{ input: string }>({
     type: 'input',
     name: 'input',
     required: true,
     message: 'Alias del entorno (solo puede contener letras minúsculas, números, guiones y guiones bajos y no pueden existir duplicados):',
   })
 
-  const result = directusEnvDataSchema.shape.alias.safeParse(answer.input)
+  const result = directusEnvDataSchema.shape.alias.safeParse(input)
 
   if (!result.success) {
     throw result.error
@@ -75,14 +86,14 @@ async function askAlias(existingEnvs: DirectusEnvData[]): Promise<string> {
 
 
 async function askUrl(): Promise<string> {
-  const answer = await inquirer.prompt<{ input: string }>({
+  const { input } = await inquirer.prompt<{ input: string }>({
     type: 'input',
     name: 'input',
     required: true,
     message: 'URL del entorno:',
   })
 
-  const result = directusEnvDataSchema.shape.url.safeParse(answer.input)
+  const result = directusEnvDataSchema.shape.url.safeParse(input)
 
   if (!result.success) {
     throw result.error
@@ -93,14 +104,14 @@ async function askUrl(): Promise<string> {
 
 
 async function askEmail(): Promise<string> {
-  const answer = await inquirer.prompt<{ input: string }>({
+  const { input } = await inquirer.prompt<{ input: string }>({
     type: 'input',
     name: 'input',
     required: true,
     message: 'Correo electrónico del usuario:',
   })
 
-  const result = directusEnvDataSchema.shape.email.safeParse(answer.input)
+  const result = directusEnvDataSchema.shape.email.safeParse(input)
 
   if (!result.success) {
     throw result.error
@@ -111,14 +122,14 @@ async function askEmail(): Promise<string> {
 
 
 async function askToken(): Promise<string> {
-  const answer = await inquirer.prompt<{ input: string }>({
+  const { input } = await inquirer.prompt<{ input: string }>({
     type: 'password',
     name: 'input',
     required: true,
     message: 'Token de acceso API del usuario:',
   })
 
-  const result = directusEnvDataSchema.shape.token.safeParse(answer.input)
+  const result = directusEnvDataSchema.shape.token.safeParse(input)
 
   if (!result.success) {
     throw result.error

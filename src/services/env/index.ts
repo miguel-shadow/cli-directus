@@ -103,7 +103,7 @@ export class DirectusEnv {
    * @returns Data del entorno actual
    */
   public getCurrent(): DirectusEnvData | null {
-    const alias = FileSystemTools.readFileSafeSync(this.getCurrentEnvPath())
+    const alias = FileSystemTools.readFileSafeSync(this.getCurrentEnvPath())?.trim()
 
     if (typeof alias !== 'string') {
       return null

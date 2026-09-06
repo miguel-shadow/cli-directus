@@ -1,8 +1,9 @@
-import type { DirectusEnv } from '@services'
+import type { DirectusApi, DirectusEnv } from '@services'
 import type { CommandOptions } from '../types.js'
 
 
 export interface EnvCommandOptions extends CommandOptions {
+  directusApi: DirectusApi
   directusEnv: DirectusEnv
 }
 

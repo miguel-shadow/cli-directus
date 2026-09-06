@@ -314,7 +314,7 @@ function readJsonSync<T = unknown>(filePath: string): T {
  */
 async function readJsonSafe<T = unknown>(filePath: string): Promise<T | null> {
   try {
-    return await readJson(filePath)
+    return await readJson<T>(filePath)
   } catch {
     return null
   }

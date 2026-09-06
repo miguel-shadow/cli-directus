@@ -1,4 +1,4 @@
-import { resolve, dirname } from 'node:path'
+import { resolve, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { homedir } from 'node:os'
 
@@ -26,6 +26,7 @@ function loadEnv(): EnvConfig {
       root: resolve(DIR_PATH, '..', '..'),
       user: resolve(homedir(), '.directus-cli'),
       cwd: process.cwd(),
+      src: join(process.cwd(), 'src'),
     },
   }
 }

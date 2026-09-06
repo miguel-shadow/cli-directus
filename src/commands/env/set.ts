@@ -23,6 +23,8 @@ export async function setAction(params: EnvCommandOptions, alias: string, option
     if (!ok) {
       return
     }
+
+    console.log()
   }
 
   directusEnv.setCurrent(alias)

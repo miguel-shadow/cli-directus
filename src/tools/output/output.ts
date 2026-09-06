@@ -11,8 +11,11 @@ export const OutputTools = {
   divisor,
   formatList,
   formatSubtitle,
+  formatTemplate,
   formatTitle,
 }
+
+export class OutputToolsError extends Error {}
 
 
 // Opciones por defecto
@@ -192,6 +195,66 @@ function formatSubtitle(subtitle: string, options: FormatSubtitleOptions = {}): 
   })
 
   return `${coloredDivisor} ${textColor ? textColor(subtitle) : subtitle}`
+}
+
+
+/**
+ * Formatea una plantilla con formato `{replace}` con los valoes introducidos. Admite tanto **índices númericos** como de **clave-valor**.
+ *
+ * @param template Plantilla a formatear.
+ * @param values Valores con los que se reemplazarán la plantilla
+ * - `string[]`: Array con los valores a sustituir. La plantilla debe tener el formato `'{0} {1} {2}...'`.
+ * Los índices deben ser continuos comenzando por `0`, en caso contrario se lanza un error.
+ * - `Record<string, string>`: Objeto con los valores a sustituir. La plantilla debe tener el formato `'{key} {key2} {key3}...'`.
+ * Si no se encuentra una key para la plantilla se lanza un error.
+ *
+ * @returns Plantilla formateada.
+ *
+ * @example
+ * const values = ['valor-1', 'valor-2']
+ * OutputTools.formatTemplate('{0} y {1}', values)
+ * // 'valor-1 y valor-2'
+ *
+ * @example
+ * const values = ['valor-1', 'valor-2']
+ * OutputTools.formatTemplate('{0} y {3}', values)
+ * // ERROR
+ *
+ * @example
+ * const values = { key: 'valor-1', keyExists: 'valor-2' }
+ * OutputTools.formatTemplate('{key} y {keyExists}', values)
+ * // 'valor-1 y valor-2'
+ *
+ * @example
+ * const values = { key: 'valor-1', keyNotExists: 'valor-2' }
+ * OutputTools.formatTemplate('{key} y {keyExists}', values)
+ * // ERROR
+ */
+function formatTemplate(template: string, values: string[] | Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (_, key) => {
+    // {index}
+    if (Array.isArray(values)) {
+      const index = Number(key)
+
+      if (!Number.isInteger(index)) {
+        throw new OutputToolsError(`'El índice {${key}}' debe ser un número entero positivo. Plantilla '${template}'`)
+      }
+
+      if (typeof values[index] === 'undefined') {
+        throw new OutputToolsError(`Falta el valor para el índice '{${key}}'. Plantilla '${template}'`)
+      }
+
+      return values[index]
+    }
+
+    // {key}
+    const keyString = String(key)
+    if (typeof values[keyString] === 'undefined') {
+      throw new OutputToolsError(`Falta el valor para la clave '{${key}}'. Plantilla '${template}'`)
+    }
+
+    return values[keyString]
+  })
 }
 
 

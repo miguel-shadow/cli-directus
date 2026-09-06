@@ -1,8 +1,11 @@
 export { ArrayTools } from './array/array.js'
 export { FileSystemTools, FileSystemToolsError } from './file-system/file-system.js'
+export { HttpTools, HttpError } from './http/http.js'
 export { InputTools } from './input.js'
 export { Logger } from './logger/logger.js'
 export { LoggerFile } from './logger/logger-file.js'
-export { OutputTools } from './output/output.js'
+export { OutputTools, OutputToolsError } from './output/output.js'
 export { TimeTools } from './time.js'
 export { ZodTools } from './zod/zod.js'
+
+export type { HttpMethods, HttpResponseSuccess } from './http/types.js'

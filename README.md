@@ -19,6 +19,7 @@
         cli-progress `
         commander `
         inquirer `
+        ora `
         zod
 
     pnpm add --save-exact --save-dev `

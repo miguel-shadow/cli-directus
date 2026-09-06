@@ -23,6 +23,8 @@ export async function removeAction(params: EnvCommandOptions, alias: string, opt
     if (!ok) {
       return
     }
+
+    console.log()
   }
 
   directusEnv.remove(alias)

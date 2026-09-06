@@ -4,21 +4,33 @@ import { program } from 'commander'
 import path from 'node:path'
 import { ZodError } from 'zod'
 
-import { createEnvCommand } from '@commands'
+import {
+  createEnvCommand,
+  createRetrieveCommand,
+  createDeployCommand,
+} from '@commands'
 import { Env } from '@env'
-import { DirectusEnv } from '@services'
+import { DirectusEnv, DirectusApi } from '@services'
 import { LoggerFile, OutputTools, ZodTools } from '@tools'
 
 const env = Env.loadEnv()
 const logger = new LoggerFile({ filepath: path.join(env.paths.root, 'logs', 'directus-cli.log') })
 const directusEnv = new DirectusEnv(env)
+const directusApi = new DirectusApi(directusEnv)
 
 program
   .name('directus')
   .description('Command Line Interface para Directus')
   .version('1.0.0', '-v, --version', 'Muestra el número de versión')
 
-program.addCommand(createEnvCommand({ logger, directusEnv }))
+program.addCommand(createEnvCommand({ logger, directusEnv, directusApi }))
+program.addCommand(createRetrieveCommand({ logger, env, directusApi }))
+program.addCommand(createDeployCommand({
+  logger,
+  env,
+  directusEnv,
+  directusApi,
+}))
 
 try {
   await program.parseAsync()
