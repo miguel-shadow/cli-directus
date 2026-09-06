@@ -1,0 +1,41 @@
+{
+  "name": "cli-directus",
+  "version": "1.0.0",
+  "description": "Command Line Interface de Directus",
+  "main": "dist/app.js",
+  "type": "module",
+  "bin": {
+    "directus": "./dist/app.js"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint",
+    "lint-f": "eslint --fix",
+    "build": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\" && tsc && tsc-alias -p tsconfig.json",
+    "start": "node dist/app.js",
+    "dev": "tsx src/app.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "5.6.2",
+    "cli-progress": "3.12.0",
+    "commander": "14.0.3",
+    "inquirer": "13.4.2",
+    "zod": "4.3.6"
+  },
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "5.10.0",
+    "@types/cli-progress": "3.11.6",
+    "@types/node": "25.5.0",
+    "@typescript-eslint/eslint-plugin": "8.58.0",
+    "@typescript-eslint/parser": "8.58.0",
+    "eslint": "10.1.0",
+    "globals": "17.4.0",
+    "tsc-alias": "1.8.16",
+    "tsx": "4.21.0",
+    "typescript": "6.0.2"
+  },
+  "packageManager": "pnpm@10.33.2+sha512.a90faf6feeab71ad6c6e57f94e0fe1a12f5dcc22cd754db40ae9593eb6a3e0b6b12e3540218bb37ae083404b1f2ce6db2a4121e979829b4aff94b99f49da1cf8"
+}
