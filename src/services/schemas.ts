@@ -15,4 +15,89 @@ export const settingsResponseSchema = z.object({
 })
 
 
+export const bookmarkSchema = z.object({
+  id: z.number(),
+  bookmark: z.string().nullable(),
+  collection: z.string(),
+}).catchall(z.unknown())
+
+export const bookmarksResponseSchema = z.object({
+  data: z.array(bookmarkSchema),
+})
+
+
+export const collectionSchema = z.object({
+  collection: z.string(),
+  meta: z.object({
+    group: z.string().nullable(),
+  }).catchall(z.unknown()),
+}).catchall(z.unknown())
+
+export const fieldSchema = z.object({
+  collection: z.string(),
+  field: z.string(),
+}).catchall(z.unknown())
+
+export const relationSchema = z.object({
+  collection: z.string(),
+  field: z.string(),
+  related_collection: z.string(),
+}).catchall(z.unknown())
+
+export const schemasResponseSchema = z.object({
+  data: z.object({
+    collections: z.array(collectionSchema),
+    fields: z.array(fieldSchema),
+    relations: z.array(relationSchema),
+  }).catchall(z.unknown()),
+})
+
+
+export const schemaDiffResponse = z.object({
+  data: z.object({
+    hash: z.string(),
+    diff: z.object({
+      collections: z.array(z.object({
+        collection: z.string(),
+      }).catchall(z.unknown())),
+      fields: z.array(z.object({
+        collection: z.string(),
+        field: z.string(),
+      }).catchall(z.unknown())),
+      relations: z.array(z.object({
+        collection: z.string(),
+        field: z.string(),
+        related_collection: z.string(),
+      }).catchall(z.unknown())),
+    }).catchall(z.unknown()),
+  }),
+}).nullable()
+
+
+export const schemaDiff = z.object({
+  hash: z.string(),
+  diff: z.object({
+    collections: z.array(z.object({
+      collection: z.string(),
+    }).catchall(z.unknown())),
+    fields: z.array(z.object({
+      collection: z.string(),
+      field: z.string(),
+    }).catchall(z.unknown())),
+    relations: z.array(z.object({
+      collection: z.string(),
+      field: z.string(),
+      related_collection: z.string(),
+    }).catchall(z.unknown())),
+  }).catchall(z.unknown()),
+})
+
+
 export type DirectusApiSettings = z.infer<typeof settingsSchema>
+export type DirectusApiBookmark = z.infer<typeof bookmarkSchema>
+export type DirectusApiCollection = z.infer<typeof collectionSchema>
+export type DirectusApiField = z.infer<typeof fieldSchema>
+export type DirectusApiRelation = z.infer<typeof relationSchema>
+export type DirectusApiSchemasResponse = z.infer<typeof schemasResponseSchema>
+export type DirectusApiBookmarksResponse = z.infer<typeof bookmarksResponseSchema>
+export type DirectusApiSchemaDiff = z.infer<typeof schemaDiff>

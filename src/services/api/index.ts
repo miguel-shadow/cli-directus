@@ -17,7 +17,7 @@ export class DirectusApi {
 
   public get directusEnvData(): DirectusEnvData {
     if (this._directusEnvData === null) {
-      throw new DirectusApiError('No existe un entorno activo en la carpeta actual')
+      throw new DirectusApiError('No existe un entorno de Directus activo válido en la carpeta actual')
     }
 
     return this._directusEnvData
@@ -95,17 +95,21 @@ export class DirectusApi {
    *
    * @return data obtenida
    */
-  public async sendData(path: string, method: HttpMethods, data: unknown): Promise<void> {
+  public async sendData(path: string, method: HttpMethods, data: unknown): Promise<unknown> {
     const url = `${this.directusEnvData.url}${path}`
 
     try {
-      await HttpTools.call(url, {
+      const result = await HttpTools.call(url, {
         headers: this.getheaders(true),
         body: data,
         method,
       })
+
+      return result.type === 'json' ? result.body : null
     } catch (e) {
       this.processErrors(e)
     }
+
+    return null
   }
 }

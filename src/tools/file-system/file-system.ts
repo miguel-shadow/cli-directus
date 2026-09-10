@@ -56,10 +56,13 @@ const DEFAULT_RENAME_OPTIONS: Required<RenameOptions> = {
 
 const DEFAULT_SAFE_NAME_OPTIONS: Required<SafeNameOptions> = {
   allowedChars: '',
+  notAllowedCharsReplacer: '_',
   defaultName: '_',
   maxLength: 250,
   replaceDiacritics: false,
   replaceSpaces: false,
+  spacesReplacer: '_',
+  windowsInvalidCharsReplacer: '_',
 }
 
 const DEFAULT_WRITE_FILE_OPTIONS: Required<WriteFileOptions> = {
@@ -467,10 +470,10 @@ function renameSync(oldPath: string, newPath: string, options: RenameOptions = {
  * Flujo de transformación:
  * 1. Normaliza espacios, eliminando espacios al inicio/final y espacios seguidos.
  * 2. Convierte diacríticos (si se especifica). Defaults `false`.
- * 3. Reemplaza caracteres no permitidos según `allowedChars` por `_`. Por defecto se aceptan todos los caracteres.
- * 4. Convierte espacios en `_` (si se especifica). Defaults `false`.
+ * 3. Reemplaza caracteres no permitidos según `allowedChars` por `options.notAllowedCharsReplacer`. Por defecto se aceptan todos los caracteres.
+ * 4. Convierte espacios en options.spacesReplacer` (si se especifica). Defaults `false`.
  * 5. Se trunca el nombre resultante si supera la longitud máxima permitida.
- * 6. Reemplaza caracteres no permitidos en Windows por `_`.
+ * 6. Reemplaza caracteres no permitidos en Windows por options.windowsInvalidCharsReplacer`.
  * 7. Elimina la terminación en `.` o espacio, ya que no son válidos en Windows.
  * 8. Evita nombres reservados de Windows añadiendo `_` al principio.
  *
@@ -478,13 +481,16 @@ function renameSync(oldPath: string, newPath: string, options: RenameOptions = {
  * @param options Opciones de nombre seguro:
  *
  * `allowedChars` *{string | SafeNameOptionsAllowedCharsObject}* - Regex de **caracteres permitidos**.
- * Los caracteres no permitidos se sustituirán por `'_'`. Defaults `''` (se permiten todos):
+ * Los caracteres no permitidos se sustituirán por `options.notAllowedCharsReplacer`. Defaults `''` (se permiten todos):
  * - `string` con los caracteres permitidos, por ejemplo: `'a-zA-Z0-9_\\s'`.
  * - `SafeNameOptionsAllowedCharsObject` con los caracteres permitidos y las flags:
  * 1. `regex`: Cadena con la regex de los caracteres permitidos. Por ejemplo: `'\\p{Letter}\\p{Number}_\\s'`.
  * 1. `flags`: Flags de la regex adicionales. Por ejemplo: `'u'`.
  *
  * *Importante escapar la `\` mediante `\\` al ser una string que se convertirá en una regex.
+ *
+ * `notAllowedCharsReplacer` *{string}* - Caracter o caracteres que se utilizarán en las reemplantaciones de los caracteres no permitidos.
+ * Defaults: `'_'`
  *
  * `defaultName` *{string}* - Valor por defecto a usar si el nombre resultante es una cadena vacía después de aplicar las transformaciones.
  * Defaults: `'_'`.
@@ -497,8 +503,14 @@ function renameSync(oldPath: string, newPath: string, options: RenameOptions = {
  * - `false`: No se reemplazan.
  *
  * `replaceSpaces` *{boolean}* - Defaults `false`:
- * - `true`: Reemplaza los espacios por guiones bajos. Por ejemplo `'Hello World' => 'Hello_World'`.
+ * - `true`: Reemplaza los espacios por `options.spacesReplacer`. Por ejemplo `'Hello World' => 'Hello_World'`.
  * - `false`: No se reemplazan.
+ *
+ * `spacesReplacer` *{string}* - Caracter o caracteres que se utilizarán en las reemplantaciones de los espacios.
+ * Defaults: `'_'`
+ *
+ * `windowsInvalidCharsReplacer` *{string}* - Caracter o caracteres que se utilizarán en las reemplantaciones
+ * de los caracteres no permitidos por Windows. Defaults: `'_'`
  *
  * @returns Nombre transformado.
  *
@@ -536,7 +548,6 @@ function renameSync(oldPath: string, newPath: string, options: RenameOptions = {
  * // 'Hola_Mundo'
  */
 function safeName(name: string, options: SafeNameOptions = {}): string {
-  const DEFAULT_REPLACE_CHAR = '_'
   const WINDOWS_INVALID_CHARS = /[<>:"/\\|?*]/g
   const WINDOWS_FILENAMES_RESERVED = new Set([
     'con',
@@ -570,7 +581,10 @@ function safeName(name: string, options: SafeNameOptions = {}): string {
   }
 
   // Limpieza básica
-  let result = name.trim().replace(/\s+/g, ' ')
+  let result = name
+    .trim()
+    .replace(/\s+/g, ' ')
+    .trim()
 
   // Diacríticos
   if (opts.replaceDiacritics) {
@@ -591,12 +605,15 @@ function safeName(name: string, options: SafeNameOptions = {}): string {
     }
 
     const notAllowedRegex = new RegExp(`[^${regex}]`, flags)
-    result = result.replace(notAllowedRegex, DEFAULT_REPLACE_CHAR)
+    result = result.replace(notAllowedRegex, opts.notAllowedCharsReplacer).trim()
   }
 
   // Espacios
   if (opts.replaceSpaces) {
-    result = result.replace(/\s/g, DEFAULT_REPLACE_CHAR)
+    result = result
+      .replace(/\s+/g, ' ')
+      .trim()
+      .replace(/\s/g, opts.spacesReplacer)
   }
 
   // Comprobar longitud
@@ -605,14 +622,14 @@ function safeName(name: string, options: SafeNameOptions = {}): string {
   }
 
   // Eliminar caracteres inválidos de Windows
-  result = result.replace(WINDOWS_INVALID_CHARS, DEFAULT_REPLACE_CHAR)
+  result = result.replace(WINDOWS_INVALID_CHARS, opts.windowsInvalidCharsReplacer)
 
   // Evitar terminación en . o espacio
   result = result.replace(/[ .]+$/, '')
 
   // Nombre reservados de Windows
   if (WINDOWS_FILENAMES_RESERVED.has(result)) {
-    result = `${DEFAULT_REPLACE_CHAR}${result}`
+    result = `_${result}`
   }
 
   return result || opts.defaultName
@@ -798,7 +815,7 @@ async function writeJson(filePath: string, data: unknown, options: WriteJsonOpti
   }
 
   try {
-    const json = opts.pretty ? JSON.stringify(data, null, 2) : JSON.stringify(data)
+    const json = opts.pretty ? `${JSON.stringify(data, null, 2)}\n` : JSON.stringify(data)
 
     return await writeFile(filePath, json, { append: false, override: opts.override, silentError: opts.silentError })
   } catch (error) {
@@ -852,7 +869,7 @@ function writeJsonSync(filePath: string, data: unknown, options: WriteJsonOption
   }
 
   try {
-    const json = opts.pretty ? JSON.stringify(data, null, 2) : JSON.stringify(data)
+    const json = opts.pretty ? `${JSON.stringify(data, null, 2)}\n` : JSON.stringify(data)
 
     return writeFileSync(filePath, json, { append: false, override: opts.override, silentError: opts.silentError })
   } catch (error) {

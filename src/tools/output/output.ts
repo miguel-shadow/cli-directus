@@ -142,7 +142,9 @@ function formatList(items: string[], options: FormatListOptions = {}): string {
     ...options,
   }
 
-  const list = ' '.repeat(indentSize) + (showIndex ? '{{index}}' : '') + (listCharColor ? listCharColor(listChar) : listChar)
+  // eslint-disable-next-line no-nested-ternary
+  const list = ' '.repeat(indentSize) + (showIndex ? listCharColor ? listCharColor('{{index}}') : '{{index}}' : '') +
+    (listCharColor ? listCharColor(listChar) : listChar)
 
   const coloredItems = textColor ? items.map((item) => textColor(item)) : items
 

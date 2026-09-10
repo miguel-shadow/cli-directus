@@ -1,9 +1,7 @@
-import { FileSystemTools } from '@tools'
-import type { DirectusApi } from '../api/index.js'
-import type { EnvConfig } from '@env'
 import { join } from 'node:path'
-import { settingsSchema } from '../schemas.js'
-import type { DirectusEnv } from '../env/index.js'
+import { FileSystemTools } from '@tools'
+import { settingsSchema, type DirectusApi, type DirectusEnv } from '@services'
+import type { EnvConfig } from '@env'
 
 
 export async function deploySettings(env: EnvConfig, directusEnv: DirectusEnv, directusApi: DirectusApi): Promise<void> {
@@ -20,7 +18,7 @@ export async function deploySettings(env: EnvConfig, directusEnv: DirectusEnv, d
   const currentEnv = directusEnv.getCurrent()
 
   if (currentEnv === null) {
-    throw new Error('No hay un entorno de Directus activo en la carpeta actual')
+    throw new Error('No existe un entorno de Directus activo válido en la carpeta actual')
   }
 
   settings.project_name = currentEnv.project.name

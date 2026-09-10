@@ -11,8 +11,11 @@ export interface SafeNameOptions {
   allowedChars?: SafeNameOptionAllowedChars
   defaultName?: string
   maxLength?: number
+  notAllowedCharsReplacer?: string
   replaceDiacritics?: boolean
   replaceSpaces?: boolean
+  spacesReplacer?: string
+  windowsInvalidCharsReplacer?: string
 }
 
 type SafeNameOptionAllowedChars = string | SafeNameOptionsAllowedCharsObject
