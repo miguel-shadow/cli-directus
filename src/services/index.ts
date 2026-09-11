@@ -2,6 +2,8 @@ export {
   bookmarksResponseSchema,
   schemasResponseSchema,
   settingsSchema,
+  folderSchema,
+  foldersResponseSchema,
   schemaDiffResponse,
   collectionSchema,
   bookmarkSchema,
@@ -10,8 +12,10 @@ export {
   type DirectusApiSchemasResponse,
   type DirectusApiBookmarksResponse,
   type DirectusApiSettings,
+  type DirectusApiFolder,
   type DirectusApiBookmark,
   type DirectusApiCollection,
+  type DirectusApiFoldersResponse,
 } from './schemas.js'
 
 export type {
@@ -21,6 +25,8 @@ export type {
   SchemaDeployResume,
   SchemaResume,
   SchemasSrcData,
+  FoldersResume,
+  FolderTree,
 } from './types.js'
 
 

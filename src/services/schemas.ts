@@ -93,11 +93,24 @@ export const schemaDiff = z.object({
 })
 
 
+export const folderSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  parent: z.string().nullable(),
+}).catchall(z.unknown())
+
+export const foldersResponseSchema = z.object({
+  data: z.array(folderSchema),
+})
+
+
 export type DirectusApiSettings = z.infer<typeof settingsSchema>
 export type DirectusApiBookmark = z.infer<typeof bookmarkSchema>
 export type DirectusApiCollection = z.infer<typeof collectionSchema>
 export type DirectusApiField = z.infer<typeof fieldSchema>
+export type DirectusApiFolder = z.infer<typeof folderSchema>
 export type DirectusApiRelation = z.infer<typeof relationSchema>
 export type DirectusApiSchemasResponse = z.infer<typeof schemasResponseSchema>
 export type DirectusApiBookmarksResponse = z.infer<typeof bookmarksResponseSchema>
+export type DirectusApiFoldersResponse = z.infer<typeof foldersResponseSchema>
 export type DirectusApiSchemaDiff = z.infer<typeof schemaDiff>

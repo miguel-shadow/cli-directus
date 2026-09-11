@@ -4,6 +4,7 @@ import type {
   DirectusApiRelation,
   DirectusApiCollection,
   DirectusApiSchemaDiff,
+  DirectusApiFolder,
 } from './schemas.js'
 
 
@@ -35,7 +36,6 @@ export interface SchemaDeployResume {
   schemaResume: SchemaResume
 }
 
-
 export interface SchemasSrcData {
   bookmarks: DirectusApiBookmark[]
   schema: {
@@ -43,4 +43,18 @@ export interface SchemasSrcData {
     fields: DirectusApiField[]
     relations: DirectusApiRelation[]
   }
+}
+
+
+export interface FoldersResume {
+  existing: DirectusApiFolder[]
+  new: DirectusApiFolder[]
+}
+
+export interface FolderTree {
+  folder: DirectusApiFolder
+  hasChildrens: boolean
+  id: string
+  name: string
+  path: string
 }
