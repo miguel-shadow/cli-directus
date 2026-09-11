@@ -2,6 +2,7 @@ import { Command } from 'commander'
 import { settingsAction } from './settings.js'
 import { schemasAction } from './schemas.js'
 import { foldersAction } from './folders.js'
+import { dashboardsAction } from './dashboards.js'
 
 import type { RetrieveCommandOptions } from './types.js'
 
@@ -13,6 +14,7 @@ export function createRetrieveCommand(params: RetrieveCommandOptions): Command {
     .addCommand(createSettingsCommand(params))
     .addCommand(createSchemasCommand(params))
     .addCommand(createFoldersCommand(params))
+    .addCommand(createDashboardsCommand(params))
 }
 
 
@@ -34,4 +36,11 @@ function createFoldersCommand(params: RetrieveCommandOptions): Command {
   return new Command('folders')
     .description('Recupera los Folders del entorno de Directus')
     .action(async (_, command: Command) => { await foldersAction(params, command.optsWithGlobals()) })
+}
+
+
+function createDashboardsCommand(params: RetrieveCommandOptions): Command {
+  return new Command('dashboards')
+    .description('Recupera los Dashboards del entorno de Directus')
+    .action(async (_, command: Command) => { await dashboardsAction(params, command.optsWithGlobals()) })
 }

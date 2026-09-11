@@ -104,13 +104,31 @@ export const foldersResponseSchema = z.object({
 })
 
 
+export const dashboardSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  panels: z.array(z.object({
+    id: z.string(),
+    dashboard: z.string(),
+    name: z.string(),
+  }).catchall(z.unknown())).default([]),
+}).catchall(z.unknown())
+
+export const dashboardsResponseSchema = z.object({
+  data: z.array(dashboardSchema),
+})
+
+
 export type DirectusApiSettings = z.infer<typeof settingsSchema>
 export type DirectusApiBookmark = z.infer<typeof bookmarkSchema>
 export type DirectusApiCollection = z.infer<typeof collectionSchema>
 export type DirectusApiField = z.infer<typeof fieldSchema>
 export type DirectusApiFolder = z.infer<typeof folderSchema>
 export type DirectusApiRelation = z.infer<typeof relationSchema>
+export type DirectusApiDashboard = z.infer<typeof dashboardSchema>
+
 export type DirectusApiSchemasResponse = z.infer<typeof schemasResponseSchema>
 export type DirectusApiBookmarksResponse = z.infer<typeof bookmarksResponseSchema>
 export type DirectusApiFoldersResponse = z.infer<typeof foldersResponseSchema>
+export type DirectusApiDashboardsResponse = z.infer<typeof dashboardsResponseSchema>
 export type DirectusApiSchemaDiff = z.infer<typeof schemaDiff>

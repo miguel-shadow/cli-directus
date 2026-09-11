@@ -9,6 +9,10 @@ export {
   bookmarkSchema,
   fieldSchema,
   relationSchema,
+  dashboardSchema,
+  dashboardsResponseSchema,
+  type DirectusApiDashboard,
+  type DirectusApiDashboardsResponse,
   type DirectusApiSchemasResponse,
   type DirectusApiBookmarksResponse,
   type DirectusApiSettings,
@@ -27,6 +31,7 @@ export type {
   SchemasSrcData,
   FoldersResume,
   FolderTree,
+  DashboardsResume,
 } from './types.js'
 
 
