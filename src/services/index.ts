@@ -13,10 +13,16 @@ export {
   dashboardsResponseSchema,
   flowSchema,
   flowsResponseSchema,
+  permissionSchema,
+  policySchema,
+  policiesResponseSchema,
   type DirectusApiDashboard,
   type DirectusApiDashboardsResponse,
   type DirectusApiFlow,
   type DirectusApiFlowsResponse,
+  type DirectusApiPermission,
+  type DirectusApiPoliciesResponse,
+  type DirectusApiPolicy,
   type DirectusApiSchemasResponse,
   type DirectusApiBookmarksResponse,
   type DirectusApiSettings,
@@ -37,6 +43,7 @@ export type {
   FolderTree,
   DashboardsResume,
   FlowsResume,
+  PoliciesResume,
 } from './types.js'
 
 

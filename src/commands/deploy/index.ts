@@ -6,6 +6,7 @@ import { foldersAction } from './folders.js'
 import type { DeployCommandOptions } from './types.js'
 import { dashboardsAction } from './dashboards.js'
 import { flowsAction } from './flows.js'
+import { policiesAction } from './policies.js'
 
 
 export function createDeployCommand(params: DeployCommandOptions): Command {
@@ -17,6 +18,7 @@ export function createDeployCommand(params: DeployCommandOptions): Command {
     .addCommand(createFoldersCommand(params))
     .addCommand(createDashboardsCommand(params))
     .addCommand(createFlowsCommand(params))
+    .addCommand(createPoliciesCommand(params))
 }
 
 
@@ -52,4 +54,11 @@ function createFlowsCommand(params: DeployCommandOptions): Command {
   return new Command('flows')
     .description('Despliega los Flows almacenados localmente al entorno de Directus')
     .action(async (_, command: Command) => { await flowsAction(params, command.optsWithGlobals()) })
+}
+
+
+function createPoliciesCommand(params: DeployCommandOptions): Command {
+  return new Command('policies')
+    .description('Despliega las Policies almacenadas localmente al entorno de Directus')
+    .action(async (_, command: Command) => { await policiesAction(params, command.optsWithGlobals()) })
 }

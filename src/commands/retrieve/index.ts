@@ -4,6 +4,7 @@ import { schemasAction } from './schemas.js'
 import { foldersAction } from './folders.js'
 import { dashboardsAction } from './dashboards.js'
 import { flowsAction } from './flows.js'
+import { policiesAction } from './policies.js'
 
 import type { RetrieveCommandOptions } from './types.js'
 
@@ -17,6 +18,7 @@ export function createRetrieveCommand(params: RetrieveCommandOptions): Command {
     .addCommand(createFoldersCommand(params))
     .addCommand(createDashboardsCommand(params))
     .addCommand(createFlowsCommand(params))
+    .addCommand(createPoliciesCommand(params))
 }
 
 
@@ -52,4 +54,11 @@ function createFlowsCommand(params: RetrieveCommandOptions): Command {
   return new Command('flows')
     .description('Recupera los Flows del entorno de Directus')
     .action(async (_, command: Command) => { await flowsAction(params, command.optsWithGlobals()) })
+}
+
+
+function createPoliciesCommand(params: RetrieveCommandOptions): Command {
+  return new Command('policies')
+    .description('Recupera las Policies del entorno de Directus')
+    .action(async (_, command: Command) => { await policiesAction(params, command.optsWithGlobals()) })
 }
