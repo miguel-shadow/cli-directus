@@ -7,18 +7,27 @@ import type { DeployCommandOptions } from './types.js'
 import { dashboardsAction } from './dashboards.js'
 import { flowsAction } from './flows.js'
 import { policiesAction } from './policies.js'
+import { allAction } from './all.js'
 
 
 export function createDeployCommand(params: DeployCommandOptions): Command {
   return new Command('deploy')
     .description('Permite desplegar data almacenada localmente al entorno de Directus')
     .option('--skip-confirm, -y', 'Omite la confirmación', false)
+    .addCommand(createAllCommand(params))
     .addCommand(createSettingsCommand(params))
     .addCommand(createSchemasCommand(params))
+    .addCommand(createFlowsCommand(params))
     .addCommand(createFoldersCommand(params))
     .addCommand(createDashboardsCommand(params))
-    .addCommand(createFlowsCommand(params))
     .addCommand(createPoliciesCommand(params))
+}
+
+
+function createAllCommand(params: DeployCommandOptions): Command {
+  return new Command('all')
+    .description('Despliega todos los recursos almacenados localmente al entorno de Directus')
+    .action(async (_, command: Command) => { await allAction(params, command.optsWithGlobals()) })
 }
 
 
@@ -36,6 +45,13 @@ function createSchemasCommand(params: DeployCommandOptions): Command {
 }
 
 
+function createFlowsCommand(params: DeployCommandOptions): Command {
+  return new Command('flows')
+    .description('Despliega los Flows almacenados localmente al entorno de Directus')
+    .action(async (_, command: Command) => { await flowsAction(params, command.optsWithGlobals()) })
+}
+
+
 function createFoldersCommand(params: DeployCommandOptions): Command {
   return new Command('folders')
     .description('Despliega los Folders almacenados localmente al entorno de Directus')
@@ -47,13 +63,6 @@ function createDashboardsCommand(params: DeployCommandOptions): Command {
   return new Command('dashboards')
     .description('Despliega los Dashboards almacenados localmente al entorno de Directus')
     .action(async (_, command: Command) => { await dashboardsAction(params, command.optsWithGlobals()) })
-}
-
-
-function createFlowsCommand(params: DeployCommandOptions): Command {
-  return new Command('flows')
-    .description('Despliega los Flows almacenados localmente al entorno de Directus')
-    .action(async (_, command: Command) => { await flowsAction(params, command.optsWithGlobals()) })
 }
 
 
