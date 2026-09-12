@@ -1,33 +1,13 @@
 /* eslint-disable no-console */
 import chalk from 'chalk'
-import inquirer from 'inquirer'
 import ora from 'ora'
 import { OutputTools, type Logger } from '@tools'
 import { DirectusDeploy, type FlowsResume } from '@services'
-import type { ConfirmActionOptions } from '@commands'
-import type { DeployCommandOptions } from './types.js'
+import type { DeployRetrieveCommandOptions } from '@commands'
 
 
-export async function flowsAction(params: DeployCommandOptions, options: ConfirmActionOptions): Promise<void> {
-  console.log(OutputTools.formatTitle('Directus CLI - Deploy Flows'))
-  console.log()
-
+export async function flowsAction(params: DeployRetrieveCommandOptions): Promise<void> {
   const { logger, env, directusApi } = params
-
-  if (!options.skipConfirm) {
-    const { confirm } = await inquirer.prompt<{ confirm: boolean }>([
-      {
-        type: 'confirm',
-        name: 'confirm',
-        message: '¿Desplegar los Flows?',
-        default: false,
-      },
-    ])
-
-    if (!confirm) {
-      return
-    }
-  }
 
   const spinner = ora('Desplegando Flows...').start()
   const result = await DirectusDeploy.flows(env, directusApi)

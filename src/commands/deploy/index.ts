@@ -1,73 +1,41 @@
+/* eslint-disable @stylistic/function-paren-newline */
+/* eslint-disable @stylistic/max-len */
+import chalk from 'chalk'
 import { Command } from 'commander'
-import { settingsAction } from './settings.js'
-import { schemasAction } from './schemas.js'
-import { foldersAction } from './folders.js'
-
-import type { DeployCommandOptions } from './types.js'
 import { dashboardsAction } from './dashboards.js'
 import { flowsAction } from './flows.js'
+import { foldersAction } from './folders.js'
 import { policiesAction } from './policies.js'
-import { allAction } from './all.js'
+import { schemasAction } from './schemas.js'
+import { settingsAction } from './settings.js'
+import { commandTools, type DeployRetrieveCommandOptions, type DeployRetrieveResourceActionSet } from '@commands'
+import { RESOURCES } from '../tools/resources.js'
 
 
-export function createDeployCommand(params: DeployCommandOptions): Command {
+const deployActions: DeployRetrieveResourceActionSet = {
+  title: 'Deploy',
+  confirmVerb: 'Desplegar',
+  actions: {
+    settings: settingsAction,
+    schemas: schemasAction,
+    flows: flowsAction,
+    folders: foldersAction,
+    dashboards: dashboardsAction,
+    policies: policiesAction,
+  },
+}
+
+
+export function createDeployCommand(params: DeployRetrieveCommandOptions): Command {
   return new Command('deploy')
-    .description('Permite desplegar data almacenada localmente al entorno de Directus')
+    .description('Permite desplegar data almacenada localmente al entorno de Directus. Si no se especifica ningún parámetro --rosource (-r), se depliegan todos los recursos')
     .option('--skip-confirm, -y', 'Omite la confirmación', false)
-    .addCommand(createAllCommand(params))
-    .addCommand(createSettingsCommand(params))
-    .addCommand(createSchemasCommand(params))
-    .addCommand(createFlowsCommand(params))
-    .addCommand(createFoldersCommand(params))
-    .addCommand(createDashboardsCommand(params))
-    .addCommand(createPoliciesCommand(params))
-}
-
-
-function createAllCommand(params: DeployCommandOptions): Command {
-  return new Command('all')
-    .description('Despliega todos los recursos almacenados localmente al entorno de Directus')
-    .action(async (_, command: Command) => { await allAction(params, command.optsWithGlobals()) })
-}
-
-
-function createSettingsCommand(params: DeployCommandOptions): Command {
-  return new Command('settings')
-    .description('Despliega las Settings almacenadas localmente al entorno de Directus')
-    .action(async (_, command: Command) => { await settingsAction(params, command.optsWithGlobals()) })
-}
-
-
-function createSchemasCommand(params: DeployCommandOptions): Command {
-  return new Command('schemas')
-    .description('Despliega los Schemas almacenados localmente al entorno de Directus')
-    .action(async (_, command: Command) => { await schemasAction(params, command.optsWithGlobals()) })
-}
-
-
-function createFlowsCommand(params: DeployCommandOptions): Command {
-  return new Command('flows')
-    .description('Despliega los Flows almacenados localmente al entorno de Directus')
-    .action(async (_, command: Command) => { await flowsAction(params, command.optsWithGlobals()) })
-}
-
-
-function createFoldersCommand(params: DeployCommandOptions): Command {
-  return new Command('folders')
-    .description('Despliega los Folders almacenados localmente al entorno de Directus')
-    .action(async (_, command: Command) => { await foldersAction(params, command.optsWithGlobals()) })
-}
-
-
-function createDashboardsCommand(params: DeployCommandOptions): Command {
-  return new Command('dashboards')
-    .description('Despliega los Dashboards almacenados localmente al entorno de Directus')
-    .action(async (_, command: Command) => { await dashboardsAction(params, command.optsWithGlobals()) })
-}
-
-
-function createPoliciesCommand(params: DeployCommandOptions): Command {
-  return new Command('policies')
-    .description('Despliega las Policies almacenadas localmente al entorno de Directus')
-    .action(async (_, command: Command) => { await policiesAction(params, command.optsWithGlobals()) })
+    .option(
+      '-r, --resource <resource>',
+      `Recurso/s a desplegar (${RESOURCES.map((r) => chalk.underline(r)).join(', ')}). Por ejemplo '--resource settings --resource schemas'`,
+      commandTools.dispatcher.collectDeployRetrieveResource,
+    )
+    .action(async (_, command: Command) => {
+      await commandTools.dispatcher.runDeployRetrieveResources(params, command.optsWithGlobals(), deployActions)
+    })
 }

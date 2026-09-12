@@ -4,7 +4,7 @@ import { settingsSchema, type DirectusApi, type DirectusEnv } from '@services'
 import type { EnvConfig } from '@env'
 
 
-export async function deploySettings(env: EnvConfig, directusEnv: DirectusEnv, directusApi: DirectusApi): Promise<void> {
+export async function deploySettings(env: EnvConfig, directusApi: DirectusApi): Promise<void> {
   const filePath = join(env.paths.src, 'settings', 'settings.json')
   const data = await FileSystemTools.readJson(filePath)
 
@@ -15,11 +15,7 @@ export async function deploySettings(env: EnvConfig, directusEnv: DirectusEnv, d
   }
 
   const settings = result.data
-  const currentEnv = directusEnv.getCurrent()
-
-  if (currentEnv === null) {
-    throw new Error('No existe un entorno de Directus activo válido en la carpeta actual')
-  }
+  const currentEnv = directusApi.directusEnvData
 
   settings.project_name = currentEnv.project.name
   settings.project_url = currentEnv.url

@@ -1,33 +1,13 @@
 /* eslint-disable no-console */
 import chalk from 'chalk'
-import inquirer from 'inquirer'
 import ora from 'ora'
 import { DirectusRetrieve, type GroupsMap } from '@services'
 import { OutputTools, type Logger } from '@tools'
-import type { ConfirmActionOptions } from '@commands'
-import type { RetrieveCommandOptions } from './types.js'
+import type { DeployRetrieveCommandOptions } from '@commands'
 
 
-export async function schemasAction(params: RetrieveCommandOptions, options: ConfirmActionOptions): Promise<void> {
-  console.log(OutputTools.formatTitle('Directus CLI - Retrieve Schemas'))
-  console.log()
-
+export async function schemasAction(params: DeployRetrieveCommandOptions): Promise<void> {
   const { logger, env, directusApi } = params
-
-  if (!options.skipConfirm) {
-    const { confirm } = await inquirer.prompt<{ confirm: boolean }>([
-      {
-        type: 'confirm',
-        name: 'confirm',
-        message: 'Realizar retrieve de Schemas?',
-        default: false,
-      },
-    ])
-
-    if (!confirm) {
-      return
-    }
-  }
 
   const spinner = ora('Recuperando Schemas...').start()
   const result = await DirectusRetrieve.schemas(env, directusApi)

@@ -1,73 +1,41 @@
+/* eslint-disable @stylistic/function-paren-newline */
+/* eslint-disable @stylistic/max-len */
+import chalk from 'chalk'
 import { Command } from 'commander'
-import { settingsAction } from './settings.js'
-import { schemasAction } from './schemas.js'
-import { foldersAction } from './folders.js'
 import { dashboardsAction } from './dashboards.js'
 import { flowsAction } from './flows.js'
+import { foldersAction } from './folders.js'
 import { policiesAction } from './policies.js'
-import { allAction } from './all.js'
+import { schemasAction } from './schemas.js'
+import { settingsAction } from './settings.js'
+import { commandTools, type DeployRetrieveCommandOptions, type DeployRetrieveResourceActionSet } from '@commands'
+import { RESOURCES } from '../tools/resources.js'
 
-import type { RetrieveCommandOptions } from './types.js'
+
+const retrieveActions: DeployRetrieveResourceActionSet = {
+  title: 'Retrieve',
+  confirmVerb: 'Recuperar',
+  actions: {
+    settings: settingsAction,
+    schemas: schemasAction,
+    flows: flowsAction,
+    folders: foldersAction,
+    dashboards: dashboardsAction,
+    policies: policiesAction,
+  },
+}
 
 
-export function createRetrieveCommand(params: RetrieveCommandOptions): Command {
+export function createRetrieveCommand(params: DeployRetrieveCommandOptions): Command {
   return new Command('retrieve')
-    .description('Permite recuperar data del entorno de Directus y almacenarla en la carpeta actual')
+    .description('Permite recuperar los recursos del entorno de Directus y almacenarla en la carpeta actual. Si no se especifica ningún parámetro --rosource (-r), se recuperan todos los recursos')
     .option('--skip-confirm, -y', 'Omite la confirmación', false)
-    .addCommand(createAllCommand(params))
-    .addCommand(createSettingsCommand(params))
-    .addCommand(createSchemasCommand(params))
-    .addCommand(createFlowsCommand(params))
-    .addCommand(createFoldersCommand(params))
-    .addCommand(createDashboardsCommand(params))
-    .addCommand(createPoliciesCommand(params))
-}
-
-
-function createAllCommand(params: RetrieveCommandOptions): Command {
-  return new Command('all')
-    .description('Recupera todos los recursos del entorno de Directus')
-    .action(async (_, command: Command) => { await allAction(params, command.optsWithGlobals()) })
-}
-
-
-function createSettingsCommand(params: RetrieveCommandOptions): Command {
-  return new Command('settings')
-    .description('Recupera las Settings del entorno de Directus')
-    .action(async (_, command: Command) => { await settingsAction(params, command.optsWithGlobals()) })
-}
-
-
-function createSchemasCommand(params: RetrieveCommandOptions): Command {
-  return new Command('schemas')
-    .description('Recupera los Schemas del entorno de Directus')
-    .action(async (_, command: Command) => { await schemasAction(params, command.optsWithGlobals()) })
-}
-
-
-function createFlowsCommand(params: RetrieveCommandOptions): Command {
-  return new Command('flows')
-    .description('Recupera los Flows del entorno de Directus')
-    .action(async (_, command: Command) => { await flowsAction(params, command.optsWithGlobals()) })
-}
-
-
-function createFoldersCommand(params: RetrieveCommandOptions): Command {
-  return new Command('folders')
-    .description('Recupera los Folders del entorno de Directus')
-    .action(async (_, command: Command) => { await foldersAction(params, command.optsWithGlobals()) })
-}
-
-
-function createDashboardsCommand(params: RetrieveCommandOptions): Command {
-  return new Command('dashboards')
-    .description('Recupera los Dashboards del entorno de Directus')
-    .action(async (_, command: Command) => { await dashboardsAction(params, command.optsWithGlobals()) })
-}
-
-
-function createPoliciesCommand(params: RetrieveCommandOptions): Command {
-  return new Command('policies')
-    .description('Recupera las Policies del entorno de Directus')
-    .action(async (_, command: Command) => { await policiesAction(params, command.optsWithGlobals()) })
+    .option(
+      '-r, --resource <resource>',
+      `Recurso/s a recuperar (${RESOURCES.map((r) => chalk.underline(r)).join(', ')}). Por ejemplo '--resource settings --resource schemas'`,
+      commandTools.dispatcher.collectDeployRetrieveResource,
+    )
+    .action(async (_, command: Command) => {
+      await commandTools.dispatcher.runDeployRetrieveResources(params, command.optsWithGlobals(), retrieveActions)
+    })
 }

@@ -1,40 +1,14 @@
 /* eslint-disable no-console */
-import inquirer from 'inquirer'
-import { OutputTools } from '@tools'
-import type { DeployCommandOptions } from './types.js'
-import { DirectusDeploy } from '@services'
 import ora from 'ora'
-import type { ConfirmActionOptions } from '../types.js'
+import { DirectusDeploy } from '@services'
+import type { DeployRetrieveCommandOptions } from '@commands'
 
 
-export async function settingsAction(params: DeployCommandOptions, options: ConfirmActionOptions): Promise<void> {
-  console.log(OutputTools.formatTitle('Directus CLI - Deploy Settings'))
-  console.log()
-
-  const {
-    logger,
-    env,
-    directusEnv,
-    directusApi,
-  } = params
-
-  if (!options.skipConfirm) {
-    const { confirm } = await inquirer.prompt<{ confirm: boolean }>([
-      {
-        type: 'confirm',
-        name: 'confirm',
-        message: '¿Desplegar las Settings?',
-        default: false,
-      },
-    ])
-
-    if (!confirm) {
-      return
-    }
-  }
+export async function settingsAction(params: DeployRetrieveCommandOptions): Promise<void> {
+  const { logger, env, directusApi } = params
 
   const spinner = ora('Desplegando Settings...').start()
-  await DirectusDeploy.settings(env, directusEnv, directusApi)
+  await DirectusDeploy.settings(env, directusApi)
   spinner.succeed()
 
   console.log()

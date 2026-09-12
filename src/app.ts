@@ -25,12 +25,7 @@ program
 
 program.addCommand(createEnvCommand({ logger, directusEnv, directusApi }))
 program.addCommand(createRetrieveCommand({ logger, env, directusApi }))
-program.addCommand(createDeployCommand({
-  logger,
-  env,
-  directusEnv,
-  directusApi,
-}))
+program.addCommand(createDeployCommand({ logger, env, directusApi }))
 
 try {
   await program.parseAsync()

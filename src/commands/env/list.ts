@@ -27,28 +27,49 @@ export function listAction(params: EnvCommandOptions, options: EnvListActionOpti
     const token = options.showSecrets ? env.token : '*'.repeat(env.token.length)
     message += `\n${OutputTools.formatList([
       `URL: ${chalk.underline(chalkInstance(env.url))}`,
-      `Email: ${chalkInstance(env.email)}`,
+      `Email: ${chalkInstance(formatEmail(env.email, options.showSecrets))}`,
       `Token: ${chalkInstance(token)}`,
       `Proyecto: \n${OutputTools.formatList([
         `ID: ${chalkInstance(env.project.id)}`,
         `Nombre: ${chalkInstance(env.project.name)}`,
         `Descripción: ${chalkInstance(env.project.description)}`,
-        `Owner email: ${chalkInstance(env.project.ownerEmail)}`,
+        `Owner email: ${chalkInstance(formatEmail(env.project.ownerEmail, options.showSecrets))}`,
       ], {
-        indentSize: 10,
+        indentSize: 8,
         listChar: '+',
       })}`,
     ], {
-      indentSize: 6,
+      indentSize: 4,
     })}`
 
     return `${message}\n`
   })
 
-  logger.log('INFO', `${chalk.white('Entornos configurados:')}\n${OutputTools.formatList(rows, { listChar: '', indentSize: 2 })}`)
+  logger.log('INFO', `${chalk.white('Entornos configurados:')}\n\n${OutputTools.formatList(rows, { listChar: '' })}`)
 
   if (currentEnv === null) {
     console.log()
-    console.log(chalk.red('No hay un entorno activo en la carpeta actual.'))
+    console.log(chalk.red('No se ha encontrado ningún entorno activo en la carpeta actual.'))
   }
+}
+
+
+function formatEmail(email: string, showSecrets: boolean): string {
+  if (showSecrets) {
+    return email
+  }
+
+  const visibleChars = 5
+  const [username, domain] = email.split('@')
+
+  if (typeof username === 'undefined' || typeof domain === 'undefined') {
+    return email
+  }
+
+  let secretUsername = username
+  if (username.length > visibleChars) {
+    secretUsername = username.slice(0, visibleChars) + '*'.repeat(username.slice(visibleChars).length)
+  }
+
+  return `${secretUsername}@${'*'.repeat(domain.length)}`
 }

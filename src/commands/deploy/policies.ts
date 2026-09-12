@@ -1,33 +1,13 @@
 /* eslint-disable no-console */
 import chalk from 'chalk'
-import inquirer from 'inquirer'
 import ora from 'ora'
 import { OutputTools, type Logger } from '@tools'
 import { DirectusDeploy, type PoliciesResume } from '@services'
-import type { ConfirmActionOptions } from '@commands'
-import type { DeployCommandOptions } from './types.js'
+import type { DeployRetrieveCommandOptions } from '@commands'
 
 
-export async function policiesAction(params: DeployCommandOptions, options: ConfirmActionOptions): Promise<void> {
-  console.log(OutputTools.formatTitle('Directus CLI - Deploy Policies'))
-  console.log()
-
+export async function policiesAction(params: DeployRetrieveCommandOptions): Promise<void> {
   const { logger, env, directusApi } = params
-
-  if (!options.skipConfirm) {
-    const { confirm } = await inquirer.prompt<{ confirm: boolean }>([
-      {
-        type: 'confirm',
-        name: 'confirm',
-        message: '¿Desplegar las Policies?',
-        default: false,
-      },
-    ])
-
-    if (!confirm) {
-      return
-    }
-  }
 
   const spinner = ora('Desplegando Policies...').start()
   const result = await DirectusDeploy.policies(env, directusApi)
