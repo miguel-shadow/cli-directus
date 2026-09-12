@@ -30,6 +30,7 @@ export function createDeployCommand(params: DeployRetrieveCommandOptions): Comma
   return new Command('deploy')
     .description('Permite desplegar data almacenada localmente al entorno de Directus. Si no se especifica ningún parámetro --rosource (-r), se depliegan todos los recursos')
     .option('--skip-confirm, -y', 'Omite la confirmación', false)
+    .option('-e, --env <alias>', 'Alias del entorno a utilizar. Si no se especifica, se utiliza el entorno activo')
     .option(
       '-r, --resource <resource>',
       `Recurso/s a desplegar (${RESOURCES.map((r) => chalk.underline(r)).join(', ')}). Por ejemplo '--resource settings --resource schemas'`,

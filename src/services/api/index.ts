@@ -8,9 +8,11 @@ export class DirectusApiError extends Error {}
 
 export class DirectusApi {
   private _directusEnvData: DirectusEnvData | null = null
+  private directusEnv: DirectusEnv
 
 
   constructor(directusEnv: DirectusEnv) {
+    this.directusEnv = directusEnv
     this.directusEnvData = directusEnv.getCurrent()
   }
 
@@ -111,5 +113,24 @@ export class DirectusApi {
     }
 
     return null
+  }
+
+  /**
+   * Selecciona un entorno para la ejecución actual sin modificar el entorno activo guardado.
+   *
+   * @param alias Alias del entorno a utilizar
+   */
+  public useEnvironment(alias?: string): void {
+    if (typeof alias !== 'string') {
+      return
+    }
+
+    const environment = this.directusEnv.getByAlias(alias)
+
+    if (environment === null) {
+      throw new DirectusApiError(`No se encontró un entorno de Directus con el alias '${alias}'.`)
+    }
+
+    this.directusEnvData = environment
   }
 }

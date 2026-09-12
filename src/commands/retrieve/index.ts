@@ -30,6 +30,7 @@ export function createRetrieveCommand(params: DeployRetrieveCommandOptions): Com
   return new Command('retrieve')
     .description('Permite recuperar los recursos del entorno de Directus y almacenarla en la carpeta actual. Si no se especifica ningún parámetro --rosource (-r), se recuperan todos los recursos')
     .option('--skip-confirm, -y', 'Omite la confirmación', false)
+    .option('-e, --env <alias>', 'Alias del entorno a utilizar. Si no se especifica, se utiliza el entorno activo')
     .option(
       '-r, --resource <resource>',
       `Recurso/s a recuperar (${RESOURCES.map((r) => chalk.underline(r)).join(', ')}). Por ejemplo '--resource settings --resource schemas'`,

@@ -26,13 +26,15 @@ async function runDeployRetrieveResources(
   options: DeployRetrieveResourceActionOptions,
   resourceActions: DeployRetrieveResourceActionSet,
 ): Promise<void> {
+  config.directusApi.useEnvironment(options.env)
+
   const resources = buildDeployRetrieveSelection(options.resource)
   const isAllResources = resources.length === RESOURCES.length
   const resourceLabel = isAllResources ? 'All' : resources.join(', ')
   const confirmationLabel = isAllResources ?
     'todos los recursos' :
     `los siguientes recursos: ${resources.join(', ')}`
-  const titleMessage = `Directus CLI (${chalk.blue(chalk.underline(config.directusApi.directusEnvData.url))}) - ${resourceActions.title} ${resourceLabel}`
+  const titleMessage = `Directus CLI - ${resourceActions.title} ${resourceLabel} ${chalk.blue(`(${config.directusApi.directusEnvData.alias} - ${chalk.underline(config.directusApi.directusEnvData.url)})`)}`
 
   console.log(OutputTools.formatTitle(titleMessage))
   console.log()
@@ -56,7 +58,7 @@ async function runDeployRetrieveResources(
   const actionOptions = { ...options, skipConfirm: true }
 
   for (const [index, resource] of resources.entries()) {
-    console.log(OutputTools.formatSubtitle(`Retrieve ${resource}`))
+    console.log(OutputTools.formatSubtitle(`${resourceActions.title} ${resource}`))
     console.log()
     await resourceActions.actions[resource](config, actionOptions)
     console.log()

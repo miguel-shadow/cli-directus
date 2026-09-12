@@ -16,6 +16,7 @@ export interface DeployRetrieveCommandOptions extends CommandOptions {
 
 export interface DeployRetrieveResourceActionOptions {
   skipConfirm: boolean
+  env?: string
   resource?: string[]
 }
 
