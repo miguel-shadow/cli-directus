@@ -11,8 +11,12 @@ export {
   relationSchema,
   dashboardSchema,
   dashboardsResponseSchema,
+  flowSchema,
+  flowsResponseSchema,
   type DirectusApiDashboard,
   type DirectusApiDashboardsResponse,
+  type DirectusApiFlow,
+  type DirectusApiFlowsResponse,
   type DirectusApiSchemasResponse,
   type DirectusApiBookmarksResponse,
   type DirectusApiSettings,
@@ -32,6 +36,7 @@ export type {
   FoldersResume,
   FolderTree,
   DashboardsResume,
+  FlowsResume,
 } from './types.js'
 
 

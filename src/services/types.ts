@@ -6,6 +6,7 @@ import type {
   DirectusApiSchemaDiff,
   DirectusApiFolder,
   DirectusApiDashboard,
+  DirectusApiFlow,
 } from './schemas.js'
 
 
@@ -48,6 +49,12 @@ export interface SchemasSrcData {
 export interface DashboardsResume {
   existing: DirectusApiDashboard[]
   new: DirectusApiDashboard[]
+}
+
+
+export interface FlowsResume {
+  existing: DirectusApiFlow[]
+  new: DirectusApiFlow[]
 }
 
 

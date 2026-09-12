@@ -1,24 +1,24 @@
 import { join } from 'node:path'
 import { FileSystemTools } from '@tools'
 import {
-  dashboardsResponseSchema,
-  type DirectusApiDashboard,
+  flowsResponseSchema,
   type DirectusApi,
+  type DirectusApiFlow,
 } from '@services'
 import type { EnvConfig } from '@env'
 
 
-const URL_PATH = '/dashboards?fields=*,panels.*&limit=-1'
-const FOLDER_NAME = 'dashboards'
-const SUB_ITEMS_FOLDER_NAME = 'panels'
-const MAIN_FILENAME = 'dashboard.json'
+const URL_PATH = '/flows?fields=*,operations.*&limit=-1'
+const FOLDER_NAME = 'flows'
+const SUB_ITEMS_FOLDER_NAME = 'operations'
+const MAIN_FILENAME = 'flow.json'
 
 
-export async function retrieveDashboards(env: EnvConfig, directusApi: DirectusApi): Promise<DirectusApiDashboard[]> {
+export async function retrieveFlows(env: EnvConfig, directusApi: DirectusApi): Promise<DirectusApiFlow[]> {
   const folderPath = join(env.paths.src, FOLDER_NAME)
   const data = await directusApi.getData(URL_PATH)
 
-  const result = dashboardsResponseSchema.safeParse(data)
+  const result = flowsResponseSchema.safeParse(data)
 
   if (!result.success) {
     throw result.error
@@ -29,24 +29,28 @@ export async function retrieveDashboards(env: EnvConfig, directusApi: DirectusAp
 
   result.data.data.forEach((item) => {
     const folder = safeName(item.name)
-
     const {
       date_created: _,
       user_created: _2,
-      panels,
+      operations,
       ...cleanData
     } = item
+
     promises.push(FileSystemTools.writeJson(join(folderPath, folder, MAIN_FILENAME), cleanData))
 
-    panels.forEach((item2, index) => {
-      const { date_created: _3, user_created: _4, ...cleanData2 } = item2
+    operations.forEach((operation, index) => {
+      const {
+        date_created: _3,
+        user_created: _4,
+        ...cleanOperationData
+      } = operation
 
       promises.push(FileSystemTools.writeJson(join(
         folderPath,
         folder,
         SUB_ITEMS_FOLDER_NAME,
-        `panel_${index}__${safeName(item2.name)}.json`,
-      ), cleanData2))
+        `operation_${index}__${safeName(operation.name)}.json`,
+      ), cleanOperationData))
     })
   })
 
